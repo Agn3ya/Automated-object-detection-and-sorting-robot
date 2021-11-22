@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import urllib.request as ur #these 3 libraries for thingspeak.cloud
 net=cv2.dnn.readNet('yolov3.cfg','yolov3.weights')#reading weight and configuration file
 classes=[]
-with open('coco.names','r') as f:
+with open('darknet\data\coco.names','r') as f:
   classes = f.read().splitlines() #reading our coco data set and sorting them in list classes.
 cap=cv2.VideoCapture(0,cv2.CAP_DSHOW) #to turn on our webcam
 
@@ -51,15 +51,16 @@ while True:
   colors=np.random.uniform(0, 255, size=(len(boxes), 3))
   #giving color and font style to all the boxes
   #.flatten command is use to draw 2d modal for 3d object
-  for i in indexes.flatten():
-    x,y,w,h=boxes[i]
-    label=str(classes[classIds[i]])
-    confidence=str(round(confidences[i],2))
-    color=colors[i]
-    cv2.rectangle(img, (x,y), (x+w, y+h), color, 2)
-    #rect(image,coordinates,size,color,thickness)
-    cv2.putText(img, label + " " + confidence, (x,y+20), font, 2, (0,0,0), 2)
-    #x,y+20 is location, 2 is font size , (0,0,0)=code for black font color another 2 is thickness
+  if len(indexes) > 0:
+    for i in indexes.flatten():
+      x,y,w,h=boxes[i]
+      label=str(classes[classIds[i]])
+      confidence=str(round(confidences[i],2))
+      color=colors[i]
+      cv2.rectangle(img, (x,y), (x+w, y+h), color, 2)
+      #rect(image,coordinates,size,color,thickness)
+      cv2.putText(img, label + " " + confidence, (x,y+20), font, 2, (0,0,0), 2)
+      #x,y+20 is location, 2 is font size , (0,0,0)=code for black font color another 2 is thickness
   cv2.imshow('image',img) #to show the window for our webcam
   if label=='elephant':   #1 is for elephant
     print("Elephant is detected\nSending data to cloud........")
